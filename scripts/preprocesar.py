@@ -9,7 +9,7 @@ columnas_numericas = _dataset.select_dtypes(include='number')
 def __eliminar_outlines():
     menor, mayor = 0.25, 0.75
     quant_col  = columnas_numericas.quantile([menor, mayor])
-    columnas_numericas = columnas_numericas.apply(lambda valor:  valor[(valor > quant_col.loc[menor, valor.name]) & (valor < quant_col.loc[mayor, valor.name])], axis=0)
+    columnas_numericas = columnas_numericas.apply(lambda valor: valor[(valor > quant_col.loc[menor, valor.name]) & (valor < quant_col.loc[mayor, valor.name])], axis=0)
 
 def __limpiar_dataset(dataframe):
     #Eliminar valores nulos
