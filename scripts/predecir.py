@@ -6,24 +6,6 @@ from sklearn.model_selection import train_test_split
 from sklearn.metrics import mean_squared_error
 from scripts.preprocesar import guardar_archivo_prediccion, columnas_numericas
 
-def predecir_y_guardar_valores(dataframe):
-    correlacion = __analizar_correlacion()
-    if correlacion < 0.7:
-        X_set = dataframe.drop('Data_value', axis='columns')
-        y_set = dataframe['Data_value']
-        X_train, X_test, y_train, y_test = train_test_split(X_set, y_set, test_size=0.2, random_state=1234, shuffle=True)
-        preprocesador = __preprocesar_datos(X_train)
-        modelo = Pipeline(steps=[('preprocesado', preprocesador), ('modelo', LinearRegression())])
-        modelo.fit(X_train, y_train)
-        prediccion = modelo.predict(X_test)
-        print("Resultados del modelo:")
-        print(f"Scoring: {modelo.score(X_test, y_test)}")
-        print(f"Error del test: {mean_squared_error(y_true=y_test, y_pred=prediccion, squared=False)}")
-        dataframe_prediccion = guardar_archivo_prediccion(dataframe, y_test, prediccion)
-        return dataframe_prediccion
-    else:
-        raise Exception("No se puede llevar a cabo la regresion lineal. Las variables estan altamente correlacionadas")
-
 def __analizar_correlacion():
     correlacion = columnas_numericas.corr(method='pearson').stack().reset_index()
     correlacion.columns = ['variable_1', 'variable_2', 'r']
@@ -43,3 +25,21 @@ def __preprocesar_datos(X_train):
     transformers = [tupla_numerica, tupla_categorica]
     preprocesador = ColumnTransformer(transformers=transformers, remainder='passthrough', verbose_feature_names_out=False)
     return preprocesador.set_output(transform='pandas')
+
+def predecir_y_guardar_valores(dataframe):
+    correlacion = __analizar_correlacion()
+    if correlacion < 0.7:
+        X_set = dataframe.drop('Data_value', axis='columns')
+        y_set = dataframe['Data_value']
+        X_train, X_test, y_train, y_test = train_test_split(X_set, y_set, test_size=0.2, random_state=1234, shuffle=True)
+        preprocesador = __preprocesar_datos(X_train)
+        modelo = Pipeline(steps=[('preprocesado', preprocesador), ('modelo', LinearRegression())])
+        modelo.fit(X_train, y_train)
+        prediccion = modelo.predict(X_test)
+        print("Resultados del modelo:")
+        print(f"Scoring: {modelo.score(X_test, y_test)}")
+        print(f"Error del test: {mean_squared_error(y_true=y_test, y_pred=prediccion, squared=False)}")
+        dataframe_prediccion = guardar_archivo_prediccion(dataframe, y_test, prediccion)
+        return dataframe_prediccion
+    else:
+        raise Exception("No se puede llevar a cabo la regresion lineal. Las variables estan altamente correlacionadas")
