@@ -7,11 +7,9 @@ _dataset = pd.read_csv(_url_original)
 columnas_numericas = _dataset.select_dtypes(include='number')
 
 def __eliminar_outlines():
-    def comparar_valores():
-        menor, mayor = 0.25, 0.75
-        quant_col  = columnas_numericas.quantile([menor, mayor])
-        valor = valor[(valor > quant_col.loc[menor, valor.name]) & (valor < quant_col.loc[mayor, valor.name])]
-    columnas_numericas = columnas_numericas.apply(comparar_valores , axis=0)
+    menor, mayor = 0.25, 0.75
+    quant_col  = columnas_numericas.quantile([menor, mayor])
+    columnas_numericas = columnas_numericas.apply(lambda valor:  valor[(valor > quant_col.loc[menor, valor.name]) & (valor < quant_col.loc[mayor, valor.name])], axis=0)
 
 def __limpiar_dataset(dataframe):
     #Eliminar valores nulos
