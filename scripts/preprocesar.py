@@ -6,7 +6,7 @@ _url_dataset_prediccion = "data/prediccion/predicciones.csv"
 _dataset = pd.read_csv(_url_original)
 columnas_numericas = _dataset.select_dtypes(include='number')
 
-def __eliminar_outlines():
+def __eliminar_outlines(columnas_numericas):
     menor, mayor = 0.25, 0.75
     quant_col  = columnas_numericas.quantile([menor, mayor])
     columnas_numericas = columnas_numericas.apply(lambda valor: valor[(valor > quant_col.loc[menor, valor.name]) & (valor < quant_col.loc[mayor, valor.name])], axis=0)
@@ -20,7 +20,7 @@ def __limpiar_dataset(dataframe):
     for columna in columnas_numericas.columns.to_list():
         valor_medio = dataframe[columna].mean()
         dataframe[columna].fillna(valor_medio, inplace=True)
-    __eliminar_outlines()
+    __eliminar_outlines(columnas_numericas)
 
 def dataset_original_limpio():
     try:
