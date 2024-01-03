@@ -7,6 +7,7 @@ from sklearn.metrics import mean_squared_error
 from scripts.preprocesar import guardar_archivo_prediccion, columnas_numericas
 
 def __analizar_correlacion():
+    """Analizar la correlacion del conjunto de datos"""
     correlacion = columnas_numericas.corr(method='pearson').stack().reset_index()
     correlacion.columns = ['variable_1', 'variable_2', 'r']
     correlacion = correlacion.loc[correlacion['variable_1'] != correlacion['variable_2'], :]
@@ -16,6 +17,7 @@ def __analizar_correlacion():
     return correlacion.loc[2]
 
 def __preprocesar_datos(X_train):
+    """Preprocesar las columnas numericas y categoricas del conjunto de entrenamiento"""
     columnas_numericas = X_train.select_dtypes(include=['number']).columns.to_list()
     columnas_categoricas = X_train.select_dtypes(include=['object']).columns.to_list()
     transformacion_numerica = Pipeline(steps=[('scaler', StandardScaler())])
@@ -27,6 +29,7 @@ def __preprocesar_datos(X_train):
     return preprocesador.set_output(transform='pandas')
 
 def predecir_y_guardar_valores(dataframe):
+    """Predecir los valores"""
     correlacion = __analizar_correlacion()
     if correlacion < 0.7:
         X_set = dataframe.drop('Data_value', axis='columns')
