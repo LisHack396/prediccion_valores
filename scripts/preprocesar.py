@@ -1,8 +1,6 @@
 import pandas as pd
 
 _url_original = "data/raw/consumers-price-index-september-2023-quarter-tradables-and-non-tradables.csv"
-_url_dataset_limpio = "data/clean/consumers-price-index-september-2023-quarter-tradables-and-non-tradables-clean.csv"
-_url_dataset_prediccion = "data/prediccion/predicciones.csv"
 _dataset = pd.read_csv(_url_original)
 columnas_numericas = _dataset.select_dtypes(include='number')
 
@@ -21,20 +19,23 @@ def __limpiar_dataset(dataframe):
         valor_medio = dataframe[columna].mean()
         dataframe[columna].fillna(valor_medio, inplace=True)
     __eliminar_outlines(columnas_numericas)
+    dataframe.drop(dataframe[(dataframe['Data_value']) == 0].index, axis=0, inplace=True)
 
 def dataset_original_limpio():
     """Devuelve el conjunto de datos limpio"""
+    url_dataset_limpio = "data/clean/consumers-price-index-september-2023-quarter-tradables-and-non-tradables-clean.csv"
     try:
         __limpiar_dataset(_dataset)
-        _dataset.to_csv(_url_dataset_limpio, index=False)
+        _dataset.to_csv(url_dataset_limpio, index=False)
     except FileNotFoundError:
-        print("El archivo no existe. Puede que haya sido movido o eliminado de la direccion actual. Verifique la direccion")
+        print("El archivo ha sido movido o no existe. Por favor, revisa la direccion del archivo")
     else:
         print("Archivo guardado correctamente")
-        return pd.read_csv(_url_dataset_limpio)
+        return pd.read_csv(url_dataset_limpio)
 
 def guardar_archivo_prediccion(dataset_prediccion, data_value, prediccion):
     """Guardar los resultados de la prediccion"""
+    url_dataset_prediccion = "data/prediccion/predicciones.csv"
     dataset_prediccion = pd.DataFrame({"data_value": data_value, "prediccion": prediccion})
-    dataset_prediccion.to_csv(_url_dataset_prediccion, index=False)
-    return pd.read_csv(_url_dataset_prediccion)
+    dataset_prediccion.to_csv(url_dataset_prediccion, index=False)
+    return pd.read_csv(url_dataset_prediccion)
