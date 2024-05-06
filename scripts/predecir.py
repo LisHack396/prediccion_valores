@@ -34,7 +34,7 @@ def predecir_y_guardar_valores(dataframe):
     if correlacion < 0.7:
         X_set = dataframe.drop('Data_value', axis='columns')
         y_set = dataframe['Data_value']
-        X_train, X_test, y_train, y_test = train_test_split(X_set, y_set, test_size=0.2, random_state=1234, shuffle=True)
+        X_train, X_test, y_train, y_test = train_test_split(X_set, y_set, test_size=0.2, random_state=123, shuffle=True)
         preprocesador = __preprocesar_datos(X_train)
         modelo = Pipeline(steps=[('preprocesado', preprocesador), ('modelo', LinearRegression())])
         modelo.fit(X_train, y_train)
