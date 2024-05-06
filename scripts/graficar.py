@@ -14,7 +14,7 @@ def graficar(dataset_limpio, dataset_prediccion):
     ax1 = fig.add_subplot(121)
     ax1.set(title="Distribucion de los valores de datos")
     ax2 = fig.add_subplot(122)
-    ax2.set(title="Prediccion de los valores de datos", xlim=(0, 20))
+    ax2.set(title="Prediccion de los valores de datos", xlim=(0, 25))
     
     sns.kdeplot(data=dataset_limpio['Data_value'], fill=True, color='blue', ax=ax1)
     sns.rugplot(data=dataset_limpio['Data_value'], color='blue', ax=ax1)
