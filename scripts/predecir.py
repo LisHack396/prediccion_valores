@@ -13,7 +13,7 @@ def __analizar_correlacion():
     correlacion = correlacion.loc[correlacion['variable_1'] != correlacion['variable_2'], :]
     correlacion['abs_r'] = abs(correlacion['r'])
     correlacion = correlacion.sort_values('abs_r', ascending=False)
-    correlacion = correlacion.loc[correlacion['variable_1'] == 'Data_value', 'abs_r']
+    correlacion = correlacion.loc[correlacion['variable_1'] == 'data_value', 'abs_r']
     return correlacion.loc[2]
 
 def __preprocesar_datos(X_train):
@@ -32,8 +32,8 @@ def predecir_y_guardar_valores(dataframe):
     """Predecir los valores"""
     correlacion = __analizar_correlacion()
     if correlacion < 0.7:
-        X_set = dataframe.drop('Data_value', axis='columns')
-        y_set = dataframe['Data_value']
+        X_set = dataframe.drop('data_value', axis='columns')
+        y_set = dataframe['data_value']
         X_train, X_test, y_train, y_test = train_test_split(X_set, y_set, test_size=0.2, random_state=123, shuffle=True)
         preprocesador = __preprocesar_datos(X_train)
         modelo = Pipeline(steps=[('preprocesado', preprocesador), ('modelo', LinearRegression())])

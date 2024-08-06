@@ -1,0 +1,8 @@
+version: '3.4'
+
+services:
+  prediccionvalores:
+    image: prediccionvalores
+    build:
+      context: .
+      dockerfile: ./Dockerfile

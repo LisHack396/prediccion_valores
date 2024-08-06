@@ -4,22 +4,28 @@ _url_original = "data/raw/consumers-price-index-september-2023-quarter-tradables
 _dataset = pd.read_csv(_url_original)
 columnas_numericas = _dataset.select_dtypes(include='number')
 
-def __eliminar_outlines(columnas_numericas):
+def __eliminar_outlines(dataframe):
     """Eliminar valores atipicos"""
-    menor, mayor = 0.25, 0.75
-    quant_col  = columnas_numericas.quantile([menor, mayor])
-    columnas_numericas = columnas_numericas.apply(lambda valor: valor[(valor > quant_col.loc[menor, valor.name]) & (valor < quant_col.loc[mayor, valor.name])], axis=0)
+    for columna in dataframe.select_dtypes(include='number').columns:
+        Q1 = dataframe[columna].quantile(0.25)
+        Q3 = dataframe[columna].quantile(0.75)
+        IQR = Q3 - Q1
+        outlier_mask = (dataframe[columna] < (Q1 - 1.5 * IQR)) | (dataframe[columna] > (Q3 + 1.5 * IQR))
+        return dataframe[~outlier_mask]
 
 def __limpiar_dataset(dataframe):
     """Limpiar el conjunto de datos"""
-    valor_mitad = dataframe.count().max() // 2
-    dataframe.dropna(axis=1, thresh=valor_mitad, inplace=True)
+    dataframe.columns = dataframe.columns.str.lower()
+    dataframe.drop_duplicates(subset=['series_reference'], keep="first", inplace=True)
+    cols = dataframe.columns[dataframe.isnull().mean() >= 0.5]
+    dataframe.drop(columns=cols, inplace=True)
     dataframe.dropna(inplace=True)
+    __eliminar_outlines(columnas_numericas)
+    dataframe.drop(dataframe[(dataframe['data_value']) < 0].index, axis=0, inplace=True)
+    dataframe.reset_index(drop=True, inplace=True)
     for columna in columnas_numericas.columns.to_list():
         valor_medio = dataframe[columna].mean()
         dataframe[columna].fillna(valor_medio, inplace=True)
-    __eliminar_outlines(columnas_numericas)
-    dataframe.drop(dataframe[(dataframe['Data_value']) == 0].index, axis=0, inplace=True)
 
 def dataset_original_limpio():
     """Devuelve el conjunto de datos limpio"""
